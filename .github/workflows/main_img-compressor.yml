@@ -23,14 +23,14 @@ jobs:
       uses: docker/login-action@v2
       with:
         registry: https://utilitymarketplace.azurecr.io/
-        username: ${{ secrets.AzureAppService_ContainerUsername_3181160483a349519e4d7de2b5ca95bd }}
-        password: ${{ secrets.AzureAppService_ContainerPassword_0413a081ca854afe84677192ae3c0884 }}
+        username: ${{ secrets.AzureAppService_ContainerUsername_83d5d78c40384eb885b6f2662c845351 }}
+        password: ${{ secrets.AzureAppService_ContainerPassword_e11c261108b14570a9381bb9c863584a }}
 
     - name: Build and push container image to registry
       uses: docker/build-push-action@v3
       with:
         push: true
-        tags: utilitymarketplace.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_3181160483a349519e4d7de2b5ca95bd }}/imgcompressor:${{ github.sha }}
+        tags: utilitymarketplace.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_83d5d78c40384eb885b6f2662c845351 }}/imgcompressor:${{ github.sha }}
         file: ./Dockerfile
 
   deploy:
@@ -47,5 +47,5 @@ jobs:
       with:
         app-name: 'img-compressor'
         slot-name: 'production'
-        publish-profile: ${{ secrets.AzureAppService_PublishProfile_771e9fb885e4453598a0f0b8af659e77 }}
-        images: 'utilitymarketplace.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_3181160483a349519e4d7de2b5ca95bd }}/imgcompressor:${{ github.sha }}'
+        publish-profile: ${{ secrets.AzureAppService_PublishProfile_448ecce7eca84bd5a7627d2b09b4099e }}
+        images: 'utilitymarketplace.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_83d5d78c40384eb885b6f2662c845351 }}/imgcompressor:${{ github.sha }}'
