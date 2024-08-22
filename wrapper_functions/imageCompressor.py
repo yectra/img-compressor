@@ -1,4 +1,4 @@
-from fastapi import FastAPI, File, UploadFile, Response
+from fastapi import FastAPI, File, UploadFile, Response, HTTPException
 from PIL import Image
 import io
 from fastapi.middleware.cors import CORSMiddleware
@@ -7,19 +7,17 @@ from typing import Optional
 app = FastAPI()
 
 # Configure CORS settings
-origins = [
-   "*"
-]
+origins = ["*"]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["POST"],
     allow_headers=["*"],
 )
 
-def compress_image(image_bytes, quality=None, width=None, height=None):
+def compress_image(image_bytes, quality, width: Optional[int] = None, height: Optional[int] = None):
     try:
         # Open the input image
         input_image = Image.open(io.BytesIO(image_bytes))
@@ -39,14 +37,14 @@ def compress_image(image_bytes, quality=None, width=None, height=None):
         return True, byte_array
     except Exception as e:
         return False, str(e)
-    
+
 @app.post("/api/compress")
-async def compress(image: UploadFile = File(...), quality: Optional[int] = None, width: Optional[int] = None, height: Optional[int] = None):
+async def compress(image: UploadFile = File(...), quality: int = 75, width: Optional[int] = None, height: Optional[int] = None):
     try:
         # Read the uploaded image
         image_bytes = await image.read()
 
-        # Compress the image
+        # Compress the image with optional resizing
         success, compressed_image = compress_image(image_bytes, quality, width, height)
 
         if success:
@@ -66,7 +64,6 @@ async def compress(image: UploadFile = File(...), quality: Optional[int] = None,
                 "compression_percentage": f"{reduction_percentage:.2f}%"
             })
         else:
-            return {"error": "Failed to compress image"}
+            raise HTTPException(status_code=500, detail=f"Failed to compress image: {compressed_image}")
     except Exception as e:
-        print(e)
-        return {"error": str(e)}
+        raise HTTPException(status_code=500, detail=f"Exception occurred: {str(e)}")

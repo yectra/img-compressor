@@ -9,4 +9,4 @@ async def image_compressor(req: func.HttpRequest, context: func.Context) -> func
     return await func.AsgiMiddleware(imagecompressor).handle_async(req, context)
 
 # Register the routes with the main FunctionApp
-app.route(route="api/fileconversion", methods=["POST"])(image_compressor)
+app.route(route="api/compress", methods=["POST"])(image_compressor)
